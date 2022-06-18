@@ -1,4 +1,4 @@
-import pygame
+import pygame, random
 from constants import *
 
 
@@ -9,33 +9,41 @@ class Player:
         self.image = image       
         self.x = self.max_x // 2
         self.y = self.max_y // 2 
-        self.dx = 0
-        self.dy = 0  
+        self.dx = random.randint(-4 * PLAYER_FLYING_SPEED, 4 * PLAYER_FLYING_SPEED)
+        self.dy = random.randint(-4 * PLAYER_FLYING_SPEED, 4 * PLAYER_FLYING_SPEED)
+        self.mx = 1
+        self.my = 1
         self.angle = 0
-        self.dangle = -1       
-        self.impulse = 0
+        self.dangle = PLAYER_ROTATING_SPEED        
         self.isRunning = False
         
     def collide(self, mask, x, y):
-        starship_mask = pygame.mask.from_surface(self.image[self.runnig])
+        starship_mask = pygame.mask.from_surface(self.image[self.isRunning])
         offset = (int(self.x - x), int(self.y - y))
         is_collide = mask.overlap(starship_mask, offset)
         return is_collide
 
-    def update(self, dt):
-        if self.impulse > 0:
-            self.x += UFO_FLYING_SPEED * dt
-            self.y += UFO_FLYING_SPEED * dt  
+    def update(self):
+        self.angle -= self.dangle
+        self.x += self.dx * self.mx
+        self.y += self.dy * self.my
 
-        self.angle += self.dangle
-        if (self.x > self.max_x):
-            self.x = 0
-        if (self.y > self.max_y):
-            self.y = 0
-        if (self.x < 0):
-            self.x = self.max_x
-        if (self.y < 0):
-            self.y = self.max_y      
+        if self.x > self.max_x - self.image[self.isRunning].get_width() / 2:
+            self.x = self.max_x - self.image[self.isRunning].get_width() / 2
+            self.mx *= -0.5
+            self.dangle *= -1
+        if self.x < self.image[self.isRunning].get_width() / 2:
+            self.x = self.image[self.isRunning].get_width() / 2
+            self.mx *= -0.5
+            self.dangle *= -1
+        if self.y > self.max_y - self.image[self.isRunning].get_height() / 2:
+            self.y = self.max_y - self.image[self.isRunning].get_height() / 2
+            self.my *= -0.5
+            self.dangle *= -1
+        if self.y < self.image[self.isRunning].get_height() / 2:
+            self.y = self.image[self.isRunning].get_height() / 2
+            self.my *= -0.5
+            self.dangle *= -1
         
     def draw(self, screen): 
         img_copy = pygame.transform.rotate(self.image[self.isRunning], self.angle)       
