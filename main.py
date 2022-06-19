@@ -90,8 +90,8 @@ def playMenu():
             if par.timer < 1:
                 particles.remove(par)
         
-        screen.blit(invasion_image, (200, 250 + math.cos(current_time * 5) * 10 - 25))
         screen.blit(logo_image, (window_size[0] // 2 - logo_image.get_width() // 2, window_size[1] // 2 - logo_image.get_height() // 2 + math.sin(current_time * 5) * 10 - 25))
+        screen.blit(invasion_image, (200, 250 + math.cos(current_time * 5) * 10 - 25))
         screen.blit(playbutton_image[cursor_on_btn], (window_size[0] // 2 - playbutton_image[cursor_on_btn].get_width() // 2, window_size[1] // 2 - playbutton_image[cursor_on_btn].get_height() // 2 + 110))
         
         fps.draw(screen)
