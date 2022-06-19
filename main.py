@@ -9,7 +9,7 @@ from constants import *
 
 # Setup ----------------------------------------------------------- #
 pygame.init()
-pygame.display.set_caption('Asteroids')
+pygame.display.set_caption('Asteroids 2: Alien Invasion!')
 pygame.display.set_icon(pygame.image.load('data/asteroid_t1.png'))
 # window_size = (pygame.display.Info().current_w, pygame.display.Info().current_h)
 window_size = (1200, 900)
@@ -29,6 +29,7 @@ player_image = [
     pygame.transform.scale(pygame.image.load('data/smog_running.png').convert_alpha(), (200, 200)),
 ]   
 logo_image = pygame.transform.scale(pygame.image.load('data/logo.png').convert_alpha(), (1000, 300))
+invasion_image = pygame.transform.rotate(pygame.transform.scale(pygame.image.load('data/logo2.png').convert_alpha(), (200, 200)), -15)
 playbutton_image = [
     pygame.image.load('data/playbutton1.png').convert_alpha(), 
     pygame.image.load('data/playbutton2.png').convert_alpha()
@@ -88,7 +89,8 @@ def playMenu():
             par.update()
             if par.timer < 1:
                 particles.remove(par)
-            
+        
+        screen.blit(invasion_image, (200, 250 + math.cos(current_time * 5) * 10 - 25))
         screen.blit(logo_image, (window_size[0] // 2 - logo_image.get_width() // 2, window_size[1] // 2 - logo_image.get_height() // 2 + math.sin(current_time * 5) * 10 - 25))
         screen.blit(playbutton_image[cursor_on_btn], (window_size[0] // 2 - playbutton_image[cursor_on_btn].get_width() // 2, window_size[1] // 2 - playbutton_image[cursor_on_btn].get_height() // 2 + 110))
         
@@ -125,12 +127,13 @@ def palyGame():
     button = Button(button_image)   
     particles = []
     asteroids = []
-    last_time = start_time = time.time()
+    last_time = time.time()
     difficult = 0
     tick = -1
+    gameOver = False
 
     # Game loop ------------------------------------------------------- #
-    while True:      
+    while not gameOver:      
         current_time = time.time()
         dt = (current_time - last_time) * 60    
         last_time = current_time  
@@ -174,8 +177,7 @@ def palyGame():
     # Buttons ----------------------------------------------------- #
         for event in pygame.event.get():
             if event.type == pygame.QUIT or event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:              
-                pygame.quit()
-                sys.exit()
+                gameOver = True
             if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE or event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 player.isRunning = True
             if event.type == pygame.KEYUP and event.key == pygame.K_SPACE or event.type == pygame.MOUSEBUTTONUP and event.button == 1:
@@ -185,12 +187,16 @@ def palyGame():
             keys = pygame.key.get_pressed()
 
             if keys[pygame.K_SPACE] or pygame.mouse.get_pressed():
-                player.mx += math.sin(math.radians(player.angle)) * -1 * PLAYER_FLYING_SPEED * dt
-                player.my += math.cos(math.radians(player.angle)) * -1 * PLAYER_FLYING_SPEED * dt 
+                player.dangle += PLAYER_ROTATING_SPEED * dt
+                player.dx += math.cos(math.radians(player.angle)) * dt
+                player.dy -= math.sin(math.radians(player.angle)) * dt 
 
     # Collide check ----------------------------------------------- # 
         for ast in reversed(asteroids):        
-            if player.collide(ast.mask, ast.x, ast.y) != None:        
+            if player.collide(ast.mask, ast.x, ast.y) != None: 
+                player.dangle *= -0.5   
+                player.dx *= 0.5 
+                player.dy *= 0.5     
                 sounds['bump'].play()
                 for _ in range(10):
                     particles.append(Particle(ast.x, ast.y, (255, 255, 255)))
@@ -198,5 +204,6 @@ def palyGame():
                     
         pygame.display.update()
 
-#playMenu()
-palyGame()
+while True:
+    playMenu()
+    palyGame()

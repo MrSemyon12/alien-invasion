@@ -10,11 +10,9 @@ class Player:
         self.x = self.max_x // 2
         self.y = self.max_y // 2 
         self.dx = random.randint(-4 * PLAYER_FLYING_SPEED, 4 * PLAYER_FLYING_SPEED)
-        self.dy = random.randint(-4 * PLAYER_FLYING_SPEED, 4 * PLAYER_FLYING_SPEED)
-        self.mx = 1
-        self.my = 1
+        self.dy = random.randint(-4 * PLAYER_FLYING_SPEED, 4 * PLAYER_FLYING_SPEED)        
         self.angle = 0
-        self.dangle = PLAYER_ROTATING_SPEED        
+        self.dangle = random.randint(-4 * PLAYER_FLYING_SPEED, 4 * PLAYER_FLYING_SPEED)             
         self.isRunning = False
         
     def collide(self, mask, x, y):
@@ -25,25 +23,17 @@ class Player:
 
     def update(self):
         self.angle -= self.dangle
-        self.x += self.dx * self.mx
-        self.y += self.dy * self.my
+        self.x += self.dx
+        self.y += self.dy
 
-        if self.x > self.max_x - self.image[self.isRunning].get_width() / 2:
-            self.x = self.max_x - self.image[self.isRunning].get_width() / 2
-            self.mx *= -0.5
-            self.dangle *= -1
-        if self.x < self.image[self.isRunning].get_width() / 2:
-            self.x = self.image[self.isRunning].get_width() / 2
-            self.mx *= -0.5
-            self.dangle *= -1
-        if self.y > self.max_y - self.image[self.isRunning].get_height() / 2:
-            self.y = self.max_y - self.image[self.isRunning].get_height() / 2
-            self.my *= -0.5
-            self.dangle *= -1
-        if self.y < self.image[self.isRunning].get_height() / 2:
-            self.y = self.image[self.isRunning].get_height() / 2
-            self.my *= -0.5
-            self.dangle *= -1
+        if self.x > self.max_x + self.image[self.isRunning].get_width() // 2:
+            self.x = -self.image[self.isRunning].get_width() // 2            
+        if self.x < -self.image[self.isRunning].get_width() // 2:
+            self.x = self.max_x + self.image[self.isRunning].get_width() // 2          
+        if self.y > self.max_y + self.image[self.isRunning].get_height() // 2:
+            self.y = -self.image[self.isRunning].get_height() // 2           
+        if self.y < -self.image[self.isRunning].get_height() // 2:
+            self.y = self.max_y + self.image[self.isRunning].get_height() // 2           
         
     def draw(self, screen): 
         img_copy = pygame.transform.rotate(self.image[self.isRunning], self.angle)       

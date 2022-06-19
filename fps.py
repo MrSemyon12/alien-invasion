@@ -5,7 +5,7 @@ from constants import *
 class FPS:
     def __init__(self):
         self.clock = pygame.time.Clock()
-        self.font = pygame.font.SysFont("Arial", 40)
+        self.font = pygame.font.SysFont("arial", 40)
         self.fps = self.clock.get_fps()        
 
     def draw(self, screen):
